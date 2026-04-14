@@ -225,6 +225,7 @@ IMAGES = {
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
 st.markdown("""
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');
 
@@ -232,6 +233,8 @@ st.markdown("""
 html,body,[data-testid="stAppViewContainer"],[data-testid="stMain"],.main,.block-container {
     background:#080614 !important; font-family:'Nunito',sans-serif !important; color:#e2e8ff !important;
 }
+.block-container { padding-top:1rem !important; padding-left:1rem !important; padding-right:1rem !important; }
+[data-testid="stMain"] { overflow-x:hidden !important; }
 [data-testid="stSidebar"] {
     background:linear-gradient(180deg,#0f0a1e 0%,#080614 100%) !important;
     border-right:1px solid rgba(168,85,247,0.2) !important;
@@ -445,6 +448,66 @@ html,body,[data-testid="stAppViewContainer"],[data-testid="stMain"],.main,.block
 
 /* NIVEL GRID */
 .nivel-grid-btn { animation:fadeInUp 0.4s ease; }
+
+/* ════ RESPONSIVE MOBILE ════ */
+@media (max-width: 768px) {
+    /* Reducir padding global */
+    .block-container { padding:0.5rem 0.5rem 2rem !important; max-width:100% !important; }
+
+    /* Hero compacto */
+    .hero-canvas-wrap { height:140px !important; }
+    .hero-bg-img { height:140px !important; }
+    .hero-body { padding:0 12px 6px !important; }
+    .hero-eyebrow { font-size:9px !important; padding:4px 12px !important; margin-bottom:10px !important; }
+    .hero-title { font-size:clamp(18px,5vw,26px) !important; }
+    .hero-name   { font-size:16px !important; }
+    .hero-tagline{ font-size:12px !important; margin-bottom:16px !important; }
+    .hero-icons  { gap:10px !important; }
+    .hero-bubble { width:44px !important; height:44px !important; font-size:20px !important; border-radius:12px !important; }
+    .hero-icon-lbl { font-size:8px !important; }
+
+    /* Grid de niveles: 2 columnas en mobile */
+    .lv-grid { grid-template-columns:1fr 1fr !important; gap:8px !important; margin:10px 0 16px !important; }
+    .lv-card img { height:75px !important; }
+    .lv-card-body { padding:8px 10px !important; }
+    .lv-card-tag { font-size:8px !important; }
+    .lv-card-title { font-size:11px !important; }
+
+    /* Banner de nivel más bajo */
+    .nivel-banner { height:130px !important; }
+
+    /* Confetti más bajo */
+    .confetti-banner { height:100px !important; }
+
+    /* Power rows con imagen en mobile */
+    .prow { padding:8px 10px !important; gap:8px !important; font-size:12px !important; }
+
+    /* Sidebar escondido por defecto en mobile — streamlit lo maneja */
+    /* Final card */
+    .fcard { padding:28px 16px !important; }
+    .fcard-title { font-size:20px !important; }
+    .fcard-msg { font-size:13px !important; }
+    .trophy-anim { font-size:56px !important; }
+
+    /* Intro */
+    .intro-card { padding:14px 16px !important; }
+    .intro-txt { font-size:13px !important; }
+
+    /* Widget boxes */
+    .wbox { padding:16px !important; }
+    .wbox-title { font-size:14px !important; }
+
+    /* Nivel header */
+    .nivel-ttl { font-size:15px !important; }
+    .resumen { font-size:12px !important; padding:10px 14px !important; }
+}
+
+@media (max-width: 480px) {
+    /* En pantallas muy pequeñas, 1 columna para el grid */
+    .lv-grid { grid-template-columns:1fr 1fr !important; }
+    .hero-title { font-size:16px !important; }
+    .block-container { padding:0.3rem 0.3rem 2rem !important; }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -870,12 +933,14 @@ def page_inicio():
     cards_html += '</div>'
     st.markdown(cards_html, unsafe_allow_html=True)
 
-    # Clickable navigation buttons below the grid
-    cols=st.columns(4)
+    # Clickable navigation buttons below the grid (2 cols — mobile-friendly)
+    cols=st.columns(2)
     for i,nv in enumerate(NIVELES):
-        with cols[i%4]:
-            if st.button(f"{nv['icono']} N{nv['id']}",key=f"hn{nv['id']}",use_container_width=True,
-                         help=nv['titulo']):
+        done_nv = nv["id"] in st.session_state.progress
+        chk = "✅" if done_nv else "→"
+        with cols[i%2]:
+            if st.button(f"{chk} {nv['icono']} {nv['supertitulo']}: {nv['titulo']}",
+                         key=f"hn{nv['id']}",use_container_width=True):
                 st.session_state.page=f"nivel_{nv['id']}"; st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
