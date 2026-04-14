@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import random, requests
+import random, requests, base64
+from pathlib import Path
 from datetime import date, datetime
 
 try:
@@ -211,16 +212,30 @@ FRASES = ["¡Cada día que oras eres más fuerte! 💪","¡Un explorador nunca s
           "¡Lo que empezaste hoy, Dios lo termina! 🙏","¡Eres un héroe del corazón! 🛡️"]
 
 # ── IMAGES ─────────────────────────────────────────────────────────────────────
+# ── IMAGES — ilustraciones originales del PDF ──────────────────────────────────
+_ASSETS = Path(__file__).parent / "assets"
+
+@st.cache_data(show_spinner=False)
+def _b64(name: str) -> str:
+    """Carga una imagen local como data-URI base64."""
+    p = _ASSETS / name
+    if not p.exists():
+        return ""
+    return "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode()
+
+def img_src(name: str) -> str:
+    return _b64(name)
+
 IMAGES = {
-    "hero":  "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&h=500&fit=crop&q=80",
-    1:       "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=900&h=280&fit=crop&q=80",
-    2:       "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=900&h=280&fit=crop&q=80",
-    3:       "https://images.unsplash.com/photo-1618641986557-1ecd230959aa?w=900&h=280&fit=crop&q=80",
-    4:       "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=900&h=280&fit=crop&q=80",
-    5:       "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=900&h=280&fit=crop&q=80",
-    6:       "https://images.unsplash.com/photo-1529516548873-9ce57c8f155e?w=900&h=280&fit=crop&q=80",
-    7:       "https://images.unsplash.com/photo-1551632811-561732d1e306?w=900&h=280&fit=crop&q=80",
-    "final": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=900&h=300&fit=crop&q=80",
+    "hero":  img_src("hero.png"),
+    1:       img_src("nivel_1.png"),
+    2:       img_src("nivel_2.png"),
+    3:       img_src("nivel_3.png"),
+    4:       img_src("nivel_4.png"),
+    5:       img_src("nivel_5.png"),
+    6:       img_src("nivel_6.png"),
+    7:       img_src("nivel_7.png"),
+    "final": img_src("nivel_7.png"),   # pantalla final reutiliza el explorador
 }
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
