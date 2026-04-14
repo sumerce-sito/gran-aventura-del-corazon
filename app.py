@@ -622,7 +622,14 @@ with st.sidebar:
     st.divider()
 
     opciones=["🏠 Inicio"]+[f"{n['icono']} {n['supertitulo']}: {n['titulo']}" for n in NIVELES]+["🏆 ¡Completado!"]
-    choice=st.radio("nav",opciones,label_visibility="collapsed")
+    # Derivar índice actual del radio a partir de la página activa
+    _pg=st.session_state.page
+    if _pg=="Inicio": _ridx=0
+    elif _pg=="Final": _ridx=len(opciones)-1
+    elif _pg.startswith("nivel_"): _ridx=int(_pg.split("_")[1])
+    else: _ridx=0
+    choice=st.radio("nav",opciones,index=_ridx,label_visibility="collapsed")
+    # Solo actualizar si el radio refleja una opción distinta a la página actual
     if   choice=="🏠 Inicio":        st.session_state.page="Inicio"
     elif choice=="🏆 ¡Completado!":  st.session_state.page="Final"
     else:
