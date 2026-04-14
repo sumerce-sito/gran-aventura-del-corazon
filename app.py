@@ -865,85 +865,101 @@ def widget_salto():
 
 # ── PAGE: INICIO ──────────────────────────────────────────────────────────────
 def page_inicio():
-    n=st.session_state.nombre; saludo=f"¡Hola, {n}!" if n else "¡Hola, Explorador!"
+    n=st.session_state.nombre
 
-    # Hero con canvas de partículas + imagen galáctica
-    st.markdown('<div class="hero">', unsafe_allow_html=True)
-    st.markdown(f'<div class="hero-canvas-wrap"><img class="hero-bg-img" src="{IMAGES["hero"]}" alt="galaxia"/>', unsafe_allow_html=True)
-    components.html(PARTICLE_CANVAS, height=220, scrolling=False)
-    st.markdown('</div>', unsafe_allow_html=True)
+    # ── HERO COMPACTO ──────────────────────────────────────────────────────────
+    saludo = f"¡Hola, {n}! 👋" if n else "¡Hola, Explorador! 👋"
+    done_count = len(st.session_state.progress)
     st.markdown(f"""
-    <div class="hero-body">
-        <div class="hero-eyebrow">⚔️ &nbsp;Tu Superpoder Secreto&nbsp; ⚔️</div>
-        <div class="hero-title">LA GRAN AVENTURA<br>DEL CORAZÓN</div>
-        <div class="hero-name">{saludo}</div>
-        <div class="hero-tagline">Descubre tu superpoder secreto para hablar con Dios.</div>
-        <div class="hero-icons">
-            <div class="hero-icon-wrap">
-                <div class="hero-bubble" style="background:rgba(6,182,212,0.12);border-color:rgba(6,182,212,0.4);box-shadow:0 0 18px rgba(6,182,212,0.25)">🧭</div>
-                <div class="hero-icon-lbl" style="color:#06b6d4">Explora</div>
-            </div>
-            <div class="hero-icon-wrap">
-                <div class="hero-bubble" style="background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.4);box-shadow:0 0 18px rgba(168,85,247,0.25)">📖</div>
-                <div class="hero-icon-lbl" style="color:#a855f7">Aprende</div>
-            </div>
-            <div class="hero-icon-wrap">
-                <div class="hero-bubble" style="background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.4);box-shadow:0 0 18px rgba(251,191,36,0.25)">⚡</div>
-                <div class="hero-icon-lbl" style="color:#fbbf24">Activa</div>
-            </div>
-            <div class="hero-icon-wrap">
-                <div class="hero-bubble" style="background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.4);box-shadow:0 0 18px rgba(34,197,94,0.25)">🏆</div>
-                <div class="hero-icon-lbl" style="color:#22c55e">Completa</div>
-            </div>
+    <div style="background:linear-gradient(135deg,#0f0a1e,#1a0f3c);border-radius:20px;
+         padding:28px 20px 20px;text-align:center;border:1px solid rgba(168,85,247,0.3);
+         margin-bottom:16px;position:relative;overflow:hidden;">
+      <img src="{IMAGES['hero']}" style="position:absolute;inset:0;width:100%;height:100%;
+           object-fit:cover;opacity:0.18;border-radius:20px;pointer-events:none;"/>
+      <div style="position:relative;z-index:2;">
+        <div style="font-family:Orbitron,monospace;font-size:clamp(18px,4vw,36px);font-weight:900;
+             background:linear-gradient(135deg,#e2e8ff,#a78bfa,#06b6d4);
+             -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+             background-clip:text;margin-bottom:6px;">⚔️ LA GRAN AVENTURA</div>
+        <div style="font-size:clamp(13px,3vw,17px);color:#c4b5fd;font-weight:700;margin-bottom:4px;">{saludo}</div>
+        <div style="font-size:12px;color:#6b7280;margin-bottom:16px;">
+            {"⭐ "+str(done_count)+"/7 niveles completados" if done_count else "Descubre tu superpoder secreto para hablar con Dios"}
         </div>
-    </div></div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""<div class="intro-card">
-        <div class="intro-tag">✦ Esta no es una herramienta ordinaria ✦</div>
-        <div class="intro-txt">Es una herramienta que te lleva al tesoro más grande del universo: aprender a hablar con Dios. Cada nivel desbloquea un superpoder nuevo. ¿Listo para la aventura?</div>
+        <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <div style="font-size:28px;">🗺️</div>
+            <div style="font-size:9px;color:#06b6d4;font-weight:700;letter-spacing:1px;">EXPLORA</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:28px;">⚡</div>
+            <div style="font-size:9px;color:#fbbf24;font-weight:700;letter-spacing:1px;">ACTIVA</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:28px;">🏆</div>
+            <div style="font-size:9px;color:#22c55e;font-weight:700;letter-spacing:1px;">GANA</div>
+          </div>
+        </div>
+      </div>
     </div>""", unsafe_allow_html=True)
 
-    # Misión del día
-    with st.expander(f"🎯  MISIÓN DEL DÍA — {mision_dia['icono']} {mision_dia['titulo']}",expanded=True):
-        st.markdown(f"> *{mision_dia['mision']}*")
-        st.caption(f"📌 {mision_dia['resumen']}")
-        if st.button(f"→ Ir al {mision_dia['supertitulo']}",key="btn_mdia"):
-            st.session_state.page=f"nivel_{mision_dia['id']}"; st.rerun()
+    # ── NOMBRE (si no tiene) ───────────────────────────────────────────────────
+    if not n:
+        st.markdown('<div style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.35);border-radius:14px;padding:14px 16px;margin-bottom:12px;text-align:center;"><div style="font-weight:800;color:#a78bfa;font-size:14px;margin-bottom:4px;">✍️ ¿Cómo te llamas, explorador?</div><div style="font-size:12px;color:#6b7280;">Escribe tu nombre en el panel izquierdo ←</div></div>', unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.markdown('<p style="font-family:Orbitron,monospace;font-size:11px;font-weight:700;color:#7c3aed;letter-spacing:2px;">🗺️ LOS 7 NIVELES</p>', unsafe_allow_html=True)
+    # ── BOTÓN GRANDE DE INICIO ─────────────────────────────────────────────────
+    primer_nivel = next((nv for nv in NIVELES if nv["id"] not in st.session_state.progress), NIVELES[0])
+    st.markdown(f"""<div style="background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(6,182,212,0.1));
+         border:2px solid rgba(124,58,237,0.4);border-radius:16px;padding:14px 16px;
+         margin-bottom:16px;text-align:center;">
+      <div style="font-size:11px;color:#7c3aed;font-weight:800;letter-spacing:2px;
+           font-family:Orbitron,monospace;margin-bottom:6px;">👇 TOCA AQUÍ PARA COMENZAR</div>
+      <div style="font-size:13px;color:#94a3b8;">Siguiente parada: <strong style="color:#e2e8ff">{primer_nivel['icono']} {primer_nivel['titulo']}</strong></div>
+    </div>""", unsafe_allow_html=True)
 
-    # Image card grid (visual display)
-    cards_html = '<div class="lv-grid">'
-    for nv in NIVELES:
-        done = nv["id"] in st.session_state.progress
-        chk = "✅" if done else ""
-        border = f"2px solid {nv['color']}" if done else "1px solid rgba(168,85,247,0.2)"
-        glow = f"box-shadow:0 0 20px {nv['glow']};" if done else ""
-        cards_html += f"""
-        <div class="lv-card" style="border:{border};{glow}">
-            <img src="{IMAGES[nv['id']]}" alt="{nv['titulo']}"/>
-            <div class="lv-card-body">
-                <div class="lv-card-tag" style="color:{nv['color']}">{nv['supertitulo']} {chk}</div>
-                <div class="lv-card-title">{nv['icono']} {nv['titulo']}</div>
-            </div>
-        </div>"""
-    cards_html += '</div>'
-    st.markdown(cards_html, unsafe_allow_html=True)
-
-    # Clickable navigation buttons below the grid (2 cols — mobile-friendly)
-    cols=st.columns(2)
-    for i,nv in enumerate(NIVELES):
-        done_nv = nv["id"] in st.session_state.progress
-        chk = "✅" if done_nv else "→"
-        with cols[i%2]:
-            if st.button(f"{chk} {nv['icono']} {nv['supertitulo']}: {nv['titulo']}",
-                         key=f"hn{nv['id']}",use_container_width=True):
-                st.session_state.page=f"nivel_{nv['id']}"; st.rerun()
+    if st.button(f"🚀  ¡EMPEZAR AVENTURA!  {primer_nivel['icono']}",
+                 use_container_width=True, type="primary", key="btn_start"):
+        st.session_state.page=f"nivel_{primer_nivel['id']}"; st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("🏆  Ver Pantalla Final",use_container_width=True,type="primary"):
+
+    # ── 7 NIVELES: imagen encima + botón debajo (todo clickeable) ─────────────
+    st.markdown('<div style="font-family:Orbitron,monospace;font-size:10px;font-weight:700;color:#7c3aed;letter-spacing:2px;margin-bottom:10px;">🗺️ LOS 7 NIVELES — toca uno para ir</div>', unsafe_allow_html=True)
+
+    col_a, col_b = st.columns(2, gap="small")
+    cols_cycle = [col_a, col_b]
+    for i, nv in enumerate(NIVELES):
+        done_nv = nv["id"] in st.session_state.progress
+        badge = "✅ COMPLETADO" if done_nv else f"NIVEL {nv['id']}"
+        badge_color = "#22c55e" if done_nv else nv["color"]
+        img_filter = "brightness(1.0)" if done_nv else "brightness(0.75)"
+        with cols_cycle[i % 2]:
+            # Imagen decorativa (no clickeable — está ENCIMA del botón)
+            st.markdown(f"""
+            <div style="border-radius:12px 12px 0 0;overflow:hidden;
+                 border:1px solid {nv['color']}{'99' if done_nv else '44'};
+                 border-bottom:none;margin-bottom:-4px;">
+              <div style="position:relative;">
+                <img src="{IMAGES[nv['id']]}" style="width:100%;height:85px;object-fit:cover;
+                     display:block;filter:{img_filter};"/>
+                <div style="position:absolute;top:6px;left:8px;background:rgba(0,0,0,0.7);
+                     border-radius:99px;padding:2px 10px;font-size:9px;font-weight:800;
+                     color:{badge_color};letter-spacing:1px;font-family:Orbitron,monospace;">
+                  {badge}
+                </div>
+              </div>
+            </div>""", unsafe_allow_html=True)
+            # Botón real (clickeable)
+            if st.button(f"{nv['icono']}  {nv['titulo']}",
+                         key=f"hn{nv['id']}", use_container_width=True):
+                st.session_state.page=f"nivel_{nv['id']}"; st.rerun()
+            st.markdown("<div style='margin-bottom:8px'></div>", unsafe_allow_html=True)
+
+    # ── BOTÓN PANTALLA FINAL ──────────────────────────────────────────────────
+    st.markdown("<br>", unsafe_allow_html=True)
+    if done_count == 7:
+        st.success("🎉 **¡Completaste los 7 niveles!** ¡Eres un Explorador Imparable!")
+    if st.button("🏆  Ver mis logros y estadísticas", use_container_width=True,
+                 type="primary" if done_count==7 else "secondary"):
         st.session_state.page="Final"; st.rerun()
 
 
@@ -995,19 +1011,32 @@ def page_nivel(nv):
         📌 &nbsp;<strong>Resumen:</strong>&nbsp;{nv['resumen']}</div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    c1,c2=st.columns(2)
-    with c1:
-        if st.button("← Inicio",use_container_width=True): st.session_state.page="Inicio"; st.rerun()
-    with c2:
-        if nv["id"] in st.session_state.progress: st.success("✅ ¡Nivel completado!")
-        elif st.button("☐  Marcar como completado",use_container_width=True,type="primary"):
+
+    # Botón principal: marcar completado o avanzar al siguiente
+    ya_listo = nv["id"] in st.session_state.progress
+    if ya_listo:
+        st.markdown(f'<div style="background:rgba(34,197,94,0.15);border:2px solid #22c55e;border-radius:14px;padding:14px;text-align:center;font-weight:800;color:#22c55e;font-size:16px;margin-bottom:12px;">✅ ¡Nivel completado! ¡Eres increíble!</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div style="text-align:center;font-size:12px;color:#6b7280;margin-bottom:6px;">👇 ¿Ya hiciste la misión? ¡Marca este nivel!</div>', unsafe_allow_html=True)
+        if st.button(f"✅  ¡COMPLETÉ ESTE NIVEL! — {nv['icono']} {nv['titulo']}",
+                     use_container_width=True, type="primary", key="btn_complete"):
             st.session_state.progress.add(nv["id"]); st.balloons(); st.rerun()
 
-    if nv["id"]<len(NIVELES):
-        nx=NIVELES[nv["id"]]
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button(f"→ Siguiente: {nx['icono']} {nx['titulo']}",use_container_width=True):
+    # Siguiente nivel (botón grande y claro)
+    if nv["id"] < len(NIVELES):
+        nx = NIVELES[nv["id"]]
+        st.markdown(f"""<div style="background:rgba({','.join(str(int(nx['color'].lstrip('#')[i:i+2],16)) for i in (0,2,4))},0.08);
+             border:1px solid {nx['color']}44;border-radius:14px;padding:12px 16px;
+             text-align:center;margin:10px 0 6px;">
+          <div style="font-size:11px;color:#6b7280;margin-bottom:4px;">PRÓXIMO NIVEL</div>
+          <div style="font-size:14px;font-weight:800;color:#e2e8ff;">{nx['icono']} {nx['titulo']}</div>
+        </div>""", unsafe_allow_html=True)
+        if st.button(f"➡️  IR AL {nx['supertitulo']}", use_container_width=True, key="btn_next"):
             st.session_state.page=f"nivel_{nx['id']}"; st.rerun()
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("🏠  Volver al inicio", use_container_width=True, key="btn_home"):
+        st.session_state.page="Inicio"; st.rerun()
 
 
 # ── PAGE: FINAL ───────────────────────────────────────────────────────────────
