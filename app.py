@@ -1,7 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
-import random, requests, base64
-from pathlib import Path
+import random, requests
 from datetime import date, datetime
 
 try:
@@ -212,30 +211,20 @@ FRASES = ["¡Cada día que oras eres más fuerte! 💪","¡Un explorador nunca s
           "¡Lo que empezaste hoy, Dios lo termina! 🙏","¡Eres un héroe del corazón! 🛡️"]
 
 # ── IMAGES ─────────────────────────────────────────────────────────────────────
-# ── IMAGES — ilustraciones originales del PDF ──────────────────────────────────
-_ASSETS = Path(__file__).parent / "assets"
-
-@st.cache_data(show_spinner=False)
-def _b64(name: str) -> str:
-    """Carga una imagen local como data-URI base64."""
-    p = _ASSETS / name
-    if not p.exists():
-        return ""
-    return "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode()
-
-def img_src(name: str) -> str:
-    return _b64(name)
-
+# ── IMAGES — ilustraciones originales del PDF (servidas como archivos estáticos)
+# Streamlit sirve /app/static/* desde la carpeta ./static/ cuando
+# enableStaticServing = true está en config.toml
+_S = "app/static"
 IMAGES = {
-    "hero":  img_src("hero.png"),
-    1:       img_src("nivel_1.png"),
-    2:       img_src("nivel_2.png"),
-    3:       img_src("nivel_3.png"),
-    4:       img_src("nivel_4.png"),
-    5:       img_src("nivel_5.png"),
-    6:       img_src("nivel_6.png"),
-    7:       img_src("nivel_7.png"),
-    "final": img_src("nivel_7.png"),   # pantalla final reutiliza el explorador
+    "hero":  f"{_S}/hero.jpg",
+    1:       f"{_S}/nivel_1.jpg",
+    2:       f"{_S}/nivel_2.jpg",
+    3:       f"{_S}/nivel_3.jpg",
+    4:       f"{_S}/nivel_4.jpg",
+    5:       f"{_S}/nivel_5.jpg",
+    6:       f"{_S}/nivel_6.jpg",
+    7:       f"{_S}/nivel_7.jpg",
+    "final": f"{_S}/nivel_7.jpg",
 }
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
