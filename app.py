@@ -210,6 +210,19 @@ FRASES = ["¡Cada día que oras eres más fuerte! 💪","¡Un explorador nunca s
           "Dios te está esperando. ¡Allá vamos! ⚡","¡Tu corazón tiene superpoderes! ❤️",
           "¡Lo que empezaste hoy, Dios lo termina! 🙏","¡Eres un héroe del corazón! 🛡️"]
 
+# ── IMAGES ─────────────────────────────────────────────────────────────────────
+IMAGES = {
+    "hero":  "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&h=500&fit=crop&q=80",
+    1:       "https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=900&h=280&fit=crop&q=80",
+    2:       "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=900&h=280&fit=crop&q=80",
+    3:       "https://images.unsplash.com/photo-1618641986557-1ecd230959aa?w=900&h=280&fit=crop&q=80",
+    4:       "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=900&h=280&fit=crop&q=80",
+    5:       "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=900&h=280&fit=crop&q=80",
+    6:       "https://images.unsplash.com/photo-1529516548873-9ce57c8f155e?w=900&h=280&fit=crop&q=80",
+    7:       "https://images.unsplash.com/photo-1551632811-561732d1e306?w=900&h=280&fit=crop&q=80",
+    "final": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=900&h=300&fit=crop&q=80",
+}
+
 # ── CSS ────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -302,6 +315,36 @@ html,body,[data-testid="stAppViewContainer"],[data-testid="stMain"],.main,.block
     animation:fadeInUp 0.6s ease;
 }
 .hero-canvas-wrap { width:100%; height:220px; position:relative; overflow:hidden; border-radius:24px 24px 0 0; }
+.hero-bg-img {
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    border-radius:24px 24px 0 0; opacity:0.35; pointer-events:none; z-index:0;
+}
+/* NIVEL BANNER */
+.nivel-banner {
+    width:100%; height:200px; object-fit:cover; border-radius:0 0 16px 16px;
+    margin-bottom:16px; display:block; opacity:0.75;
+    filter:saturate(1.3) brightness(0.85);
+    border:1px solid rgba(168,85,247,0.15); border-top:none;
+}
+/* LEVEL CARD GRID */
+.lv-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin:16px 0 24px; }
+.lv-card {
+    border-radius:16px; overflow:hidden; border:1px solid rgba(168,85,247,0.2);
+    cursor:pointer; transition:all 0.25s; background:#0f0a1e;
+    box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.lv-card:hover { transform:translateY(-4px); border-color:rgba(168,85,247,0.6); box-shadow:0 8px 32px rgba(124,58,237,0.3); }
+.lv-card img { width:100%; height:110px; object-fit:cover; display:block; opacity:0.8; filter:saturate(1.2); }
+.lv-card-body { padding:12px 14px; }
+.lv-card-tag { font-size:9px; letter-spacing:2px; text-transform:uppercase; font-weight:800; font-family:'Orbitron',monospace; margin-bottom:4px; }
+.lv-card-title { font-size:13px; font-weight:700; color:#e2e8ff; line-height:1.3; }
+.lv-card-check { float:right; font-size:16px; }
+/* CONFETTI BANNER */
+.confetti-banner {
+    width:100%; height:180px; object-fit:cover; border-radius:20px;
+    margin-bottom:20px; opacity:0.6; filter:saturate(1.4) brightness(0.9);
+    border:1px solid rgba(251,191,36,0.2);
+}
 .hero-body { padding:0 36px 8px; text-align:center; position:relative; z-index:2; }
 .hero-eyebrow {
     display:inline-flex; align-items:center; gap:8px;
@@ -762,9 +805,9 @@ def widget_salto():
 def page_inicio():
     n=st.session_state.nombre; saludo=f"¡Hola, {n}!" if n else "¡Hola, Explorador!"
 
-    # Hero con canvas de partículas
+    # Hero con canvas de partículas + imagen galáctica
     st.markdown('<div class="hero">', unsafe_allow_html=True)
-    st.markdown('<div class="hero-canvas-wrap">', unsafe_allow_html=True)
+    st.markdown(f'<div class="hero-canvas-wrap"><img class="hero-bg-img" src="{IMAGES["hero"]}" alt="galaxia"/>', unsafe_allow_html=True)
     components.html(PARTICLE_CANVAS, height=220, scrolling=False)
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown(f"""
@@ -809,11 +852,30 @@ def page_inicio():
     st.markdown("---")
     st.markdown('<p style="font-family:Orbitron,monospace;font-size:11px;font-weight:700;color:#7c3aed;letter-spacing:2px;">🗺️ LOS 7 NIVELES</p>', unsafe_allow_html=True)
 
-    cols=st.columns(2)
+    # Image card grid (visual display)
+    cards_html = '<div class="lv-grid">'
+    for nv in NIVELES:
+        done = nv["id"] in st.session_state.progress
+        chk = "✅" if done else ""
+        border = f"2px solid {nv['color']}" if done else "1px solid rgba(168,85,247,0.2)"
+        glow = f"box-shadow:0 0 20px {nv['glow']};" if done else ""
+        cards_html += f"""
+        <div class="lv-card" style="border:{border};{glow}">
+            <img src="{IMAGES[nv['id']]}" alt="{nv['titulo']}"/>
+            <div class="lv-card-body">
+                <div class="lv-card-tag" style="color:{nv['color']}">{nv['supertitulo']} {chk}</div>
+                <div class="lv-card-title">{nv['icono']} {nv['titulo']}</div>
+            </div>
+        </div>"""
+    cards_html += '</div>'
+    st.markdown(cards_html, unsafe_allow_html=True)
+
+    # Clickable navigation buttons below the grid
+    cols=st.columns(4)
     for i,nv in enumerate(NIVELES):
-        done=nv["id"] in st.session_state.progress; chk="✅" if done else "○"
-        with cols[i%2]:
-            if st.button(f"{chk}  {nv['icono']}  **{nv['supertitulo']}**\n\n{nv['titulo']}",key=f"hn{nv['id']}",use_container_width=True):
+        with cols[i%4]:
+            if st.button(f"{nv['icono']} N{nv['id']}",key=f"hn{nv['id']}",use_container_width=True,
+                         help=nv['titulo']):
                 st.session_state.page=f"nivel_{nv['id']}"; st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -835,6 +897,9 @@ def page_nivel(nv):
             </div>
         </div>
     </div>""", unsafe_allow_html=True)
+
+    # Banner fotográfico del nivel
+    st.markdown(f'<img class="nivel-banner" src="{IMAGES[nv["id"]]}" alt="{nv["titulo"]}"/>', unsafe_allow_html=True)
 
     with st.expander("💡  ¿Sabías que...?",expanded=True):
         st.markdown(f'<div style="color:#a5f3fc;font-size:15px;line-height:1.7;">{nv["sabias_que"]}</div>', unsafe_allow_html=True)
@@ -885,6 +950,9 @@ def page_nivel(nv):
 def page_final():
     done=len(st.session_state.progress); nb=st.session_state.nombre or "Explorador"
     ok=logros_ok()
+
+    # Imagen de celebración
+    st.markdown(f'<img class="confetti-banner" src="{IMAGES["final"]}" alt="celebración"/>', unsafe_allow_html=True)
 
     st.markdown(f"""<div class="fcard">
         <div class="trophy-anim">🏆</div>
@@ -945,12 +1013,23 @@ def page_final():
 
     st.markdown("---")
     st.markdown('<p style="font-family:Orbitron,monospace;font-size:11px;font-weight:700;color:#7c3aed;letter-spacing:2px;">⚡ SUPERPODERES</p>', unsafe_allow_html=True)
-    for ico,txt,nid in [("⚡","Orar en 1 minuto, en cualquier lugar",1),("🔋","Las 3 Recargas Mágicas diarias",2),
-                         ("🛡️","La Postura del Héroe para escuchar",3),("🗺️","Leer la Biblia como detective secreto",4),
-                         ("🎮","El Botón de Emergencias en toda emoción",5),("⛪","La Misa como la gran reunión de equipo",6),
-                         ("🧭","Volver a empezar siempre",7)]:
+    superpowers=[("⚡","Orar en 1 minuto, en cualquier lugar",1),("🔋","Las 3 Recargas Mágicas diarias",2),
+                 ("🛡️","La Postura del Héroe para escuchar",3),("🗺️","Leer la Biblia como detective secreto",4),
+                 ("🎮","El Botón de Emergencias en toda emoción",5),("⛪","La Misa como la gran reunión de equipo",6),
+                 ("🧭","Volver a empezar siempre",7)]
+    nv_colors={n["id"]:n["color"] for n in NIVELES}
+    for ico,txt,nid in superpowers:
         chk="✅" if nid in st.session_state.progress else "○"
-        st.markdown(f'<div class="prow"><span style="font-size:22px">{ico}</span><span style="flex:1">{txt}</span><span style="font-size:18px">{chk}</span></div>', unsafe_allow_html=True)
+        col=nv_colors.get(nid,"#7c3aed")
+        done_style=f"border-color:{col}55;" if nid in st.session_state.progress else ""
+        thumb=IMAGES.get(nid,"")
+        img_html=f'<img src="{thumb}" style="width:56px;height:42px;object-fit:cover;border-radius:8px;opacity:0.8;flex-shrink:0;" alt=""/>' if thumb else ""
+        st.markdown(f'''<div class="prow" style="{done_style}">
+            {img_html}
+            <span style="font-size:20px">{ico}</span>
+            <span style="flex:1;font-size:13px">{txt}</span>
+            <span style="font-size:18px">{chk}</span>
+        </div>''', unsafe_allow_html=True)
 
     if st.session_state.diario:
         st.markdown("---")
